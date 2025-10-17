@@ -1,0 +1,43 @@
+{
+  "name": "partnergize-platform",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "build": "nuxt build",
+    "dev": "nuxt dev",
+    "generate": "nuxt generate",
+    "preview": "nuxt preview",
+    "postinstall": "nuxt prepare",
+    "db:generate": "prisma generate",
+    "db:push": "prisma db push",
+    "db:migrate": "prisma migrate dev",
+    "db:studio": "prisma studio",
+    "db:init": "node scripts/init-db.js",
+    "db:seed": "node scripts/seed-db.js"
+  },
+  "devDependencies": {
+    "@nuxt/devtools": "latest",
+    "@prisma/client": "^5.7.1",
+    "@types/node": "^20.10.5",
+    "nuxt": "^3.8.4",
+    "prisma": "^5.7.1",
+    "typescript": "^5.3.3"
+  },
+  "dependencies": {
+    "@nuxtjs/tailwindcss": "^6.8.4",
+    "@pinia/nuxt": "^0.5.1",
+    "@vueuse/nuxt": "^10.5.0",
+    "bcryptjs": "^2.4.3",
+    "class-variance-authority": "^0.7.0",
+    "clsx": "^2.0.0",
+    "jsonwebtoken": "^9.0.2",
+    "nodemailer": "^6.9.7",
+    "pinia": "^2.1.7",
+    "radix-vue": "^1.2.4",
+    "tailwind-merge": "^2.2.0",
+    "tailwindcss-animate": "^1.0.7",
+    "vue": "^3.3.8",
+    "vue-router": "^4.2.5",
+    "zod": "^3.22.4"
+  }
+}
