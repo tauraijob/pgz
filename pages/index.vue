@@ -5,13 +5,9 @@
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex justify-between items-center h-20">
           <div class="flex items-center space-x-3">
-            <div class="w-10 h-10 bg-primary rounded-xl flex items-center justify-center">
-              <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
-              </svg>
-            </div>
+            <img src="/brand/logo.png" alt="Partnergize" class="h-22 w-20 rounded-2xl object-contain bg-white/80 p-1.5 shadow-md ring-1 ring-slate-200 translate-y-2 sm:translate-y-3 -mb-3 relative z-10" />
             <div class="flex items-center gap-3">
-              <h1 class="text-2xl font-bold text-primary">{{ t('app.name') }}</h1>
+              <!-- <h1 class="text-2xl font-bold text-primary">{{ t('app.name') }}</h1> -->
               <div class="flex items-center gap-1 bg-white/80 border border-slate-200 rounded-full p-1">
                 <button
                   v-for="l in availableLocales"

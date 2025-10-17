@@ -8,13 +8,9 @@
 
     <div class="sm:mx-auto sm:w-full sm:max-w-md">
       <div class="text-center">
-        <div class="w-16 h-16 bg-primary rounded-2xl flex items-center justify-center mx-auto mb-6">
-          <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
-          </svg>
-        </div>
+        <img src="/brand/logo.png" alt="Partnergize" class="h-22 w-20 rounded-2xl object-contain mx-auto mb-5 bg-white/70 p-2 shadow translate-y-1" />
         <div class="flex items-center justify-center gap-3 mb-2">
-          <h1 class="text-3xl font-bold text-primary">{{ t('app.name') }}</h1>
+        <h1 class="text-3xl font-bold text-primary">{{ t('app.name') }}</h1>
           <div class="flex items-center gap-1 bg-white border border-slate-200 rounded-full p-1">
             <button
               v-for="l in availableLocales"
