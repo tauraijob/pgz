@@ -8,11 +8,16 @@ export default defineNuxtConfig({
   ],
   css: ['~/assets/css/main.css'],
   ssr: true,
+
   nitro: {
     experimental: {
       wasm: true
+    },
+    alias: {
+      ".prisma/client/index-browser": "./node_modules/@prisma/client/index.js"
     }
   },
+  
   runtimeConfig: {
     jwtSecret: process.env.JWT_SECRET || 'your-secret-key',
     databaseUrl: process.env.DATABASE_URL || 'mysql://root:@localhost:3306/partnergize',
