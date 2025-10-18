@@ -9,12 +9,32 @@ export default defineNuxtConfig({
   css: ['~/assets/css/main.css'],
   ssr: true,
 
+  vite: {
+    resolve: {
+      alias: {
+        '.prisma/client/index-browser': './node_modules/@prisma/client/index.js',
+        '.prisma/client/default': './node_modules/@prisma/client/default.js',
+        '.prisma/client': './node_modules/@prisma/client',
+        '.prisma': './node_modules/.prisma'
+      }
+    },
+    optimizeDeps: {
+      exclude: ['@prisma/client', '.prisma/client/index-browser']
+    },
+    ssr: {
+      noExternal: ['@prisma/client']
+    }
+  },
+
   nitro: {
     experimental: {
       wasm: true
     },
-    alias: {
-      ".prisma/client/index-browser": "./node_modules/@prisma/client/index.js"
+    externals: {
+      inline: ['@prisma/client']
+    },
+    rollupConfig: {
+      external: ['.prisma', '.prisma/client/*']
     }
   },
   
