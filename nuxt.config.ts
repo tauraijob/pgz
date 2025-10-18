@@ -27,14 +27,9 @@ export default defineNuxtConfig({
   },
 
   nitro: {
-    experimental: {
-      wasm: true
-    },
-    externals: {
-      inline: ['@prisma/client']
-    },
-    rollupConfig: {
-      external: ['.prisma', '.prisma/client/*']
+    experimental: { wasm: true },
+    alias: {
+      ".prisma/client/index-browser": "./node_modules/@prisma/client/index.js"
     }
   },
   
