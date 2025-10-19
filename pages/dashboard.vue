@@ -139,20 +139,27 @@
                 <span>Go to Arise.com Registration</span>
               </a>
               
-              <div>
-                <label class="block text-sm font-semibold text-slate-700 mb-2">Upload Verification Screenshot</label>
-                <input 
-                  v-model="verificationImage"
-                  type="url" 
-                  placeholder="Paste screenshot URL here"
-                  class="input-field"
-                />
-                <p class="text-xs text-slate-500 mt-2">Upload your screenshot to an image hosting service and paste the URL here</p>
+              <div class="space-y-3">
+                <div>
+                  <label class="block text-sm font-semibold text-slate-700 mb-2">Upload Verification Screenshot</label>
+                  <input 
+                    ref="screenshotInputRef"
+                    type="file" 
+                    accept="image/*"
+                    @change="onScreenshotSelected"
+                    class="block w-full text-sm text-slate-700 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-slate-100 file:text-slate-700 hover:file:bg-slate-200"
+                  />
+                  <p v-if="screenshotName" class="text-xs text-slate-500 mt-2">Selected: {{ screenshotName }}</p>
+                </div>
+                <label class="inline-flex items-center gap-2 text-sm text-slate-700">
+                  <input type="checkbox" v-model="markApproval" class="h-4 w-4 rounded border-slate-300" />
+                  <span>Mark Approval (notify admin and send Next Steps)</span>
+                </label>
               </div>
               
               <button 
                 @click="submitVerification"
-                :disabled="!verificationImage || isSubmitting"
+                :disabled="!screenshotFile || isSubmitting"
                 class="w-full btn-primary flex items-center justify-center space-x-2 disabled:opacity-50"
               >
                 <svg v-if="!isSubmitting" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -304,10 +311,13 @@ const activeMessage = computed(() => {
   if (activeMessageIndex.value == null) return null
   return messages.value[activeMessageIndex.value] || null
 })
-const verificationImage = ref('')
+const screenshotFile = ref<File | null>(null)
+const screenshotName = ref('')
+const screenshotInputRef = ref<HTMLInputElement | null>(null)
 const isSubmitting = ref(false)
 const isLoading = ref(true)
 const ariseLink = ref('https://ariseworkfromhome.com')
+const markApproval = ref(false)
 
 const unreadMessages = computed(() => {
   return messages.value.filter(msg => !msg.isRead).length
@@ -408,17 +418,23 @@ const submitVerification = async () => {
   isSubmitting.value = true
   
   try {
+    const form = new FormData()
+    if (screenshotFile.value) form.append('screenshot', screenshotFile.value)
+    form.append('markApproval', String(markApproval.value))
+    const token = process.client ? localStorage.getItem('auth-token') : null
     const response = await $fetch('/api/user/verify-arise', {
       method: 'POST',
-      body: {
-        verificationImage: verificationImage.value
-      }
+      headers: token ? { Authorization: `Bearer ${token}` } : undefined,
+      body: form
     })
     
     if (response.success) {
-      user.value.ariseVerified = true
-      user.value.verifiedAt = new Date().toISOString()
-      verificationImage.value = ''
+      // Refresh user profile from server instead of mutating possibly null state
+      await loadUserData()
+      screenshotFile.value = null
+      screenshotName.value = ''
+      if (screenshotInputRef.value) screenshotInputRef.value.value = ''
+      markApproval.value = false
       alert('Verification submitted successfully!')
     }
   } catch (error) {
@@ -427,6 +443,18 @@ const submitVerification = async () => {
   } finally {
     isSubmitting.value = false
   }
+}
+
+const onScreenshotSelected = (e: Event) => {
+  const input = e.target as HTMLInputElement
+  if (!input.files || !input.files.length) {
+    screenshotFile.value = null
+    screenshotName.value = ''
+    return
+  }
+  const file = input.files[0]
+  screenshotFile.value = file
+  screenshotName.value = file.name
 }
 
 const handleLogout = async () => {

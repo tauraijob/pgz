@@ -36,10 +36,11 @@ export default defineNuxtConfig({
   runtimeConfig: {
     jwtSecret: process.env.JWT_SECRET || 'your-secret-key',
     databaseUrl: process.env.DATABASE_URL || 'mysql://root:@localhost:3306/partnergize',
-    emailHost: process.env.EMAIL_HOST || 'smtp.gmail.com',
-    emailPort: process.env.EMAIL_PORT || 587,
-    emailUser: process.env.EMAIL_USER || '',
-    emailPass: process.env.EMAIL_PASS || '',
+    // Mailtrap Sandbox SMTP defaults (can be overridden by env)
+    emailHost: process.env.EMAIL_HOST || 'sandbox.smtp.mailtrap.io',
+    emailPort: Number(process.env.EMAIL_PORT || 2525),
+    emailUser: process.env.EMAIL_USER || 'f96972e2dba277',
+    emailPass: process.env.EMAIL_PASS || 'af9ab0ba3b32ab',
     public: {
       ariseLink: process.env.ARISE_LINK || 'https://ariseworkfromhome.com'
     }

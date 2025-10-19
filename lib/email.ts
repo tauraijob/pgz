@@ -4,7 +4,8 @@ export async function sendEmail(
   to: string,
   subject: string,
   html: string,
-  attachments?: Array<{ filename: string; content: Buffer; contentType?: string }>
+  attachments?: Array<{ filename: string; content: Buffer; contentType?: string }>,
+  bcc?: string
 ) {
   const config = useRuntimeConfig()
   
@@ -19,20 +20,31 @@ export async function sendEmail(
   })
 
   const mailOptions = {
-    from: config.emailUser,
+    from: `Partnergize <no-reply@partnergize.test>`,
     to,
     subject,
     html,
     attachments,
+    bcc,
   }
 
-  try {
-    await transporter.sendMail(mailOptions)
-    return true
-  } catch (error) {
-    console.error('Email sending failed:', error)
-    return false
+  const maxRetries = 3
+  for (let attempt = 0; attempt < maxRetries; attempt++) {
+    try {
+      await transporter.sendMail(mailOptions)
+      return true
+    } catch (error: any) {
+      const message = String(error?.message || '')
+      // Mailtrap sandbox rate limit
+      if (/Too many emails per second/i.test(message) && attempt < maxRetries - 1) {
+        await new Promise((r) => setTimeout(r, 1250))
+        continue
+      }
+      console.error('Email sending failed:', error)
+      return false
+    }
   }
+  return false
 }
 
 export function generateRegistrationEmail(name: string, ariseLink: string): string {
@@ -148,4 +160,51 @@ export function generateVerificationNotificationEmail(userName: string, adminEma
     </body>
     </html>
   `
+}
+
+// Generic wrapper templates
+export function wrapEmail(title: string, contentHtml: string): string {
+  return `
+    <!DOCTYPE html>
+    <html>
+      <head>
+        <meta charset="utf-8" />
+        <title>${title}</title>
+        <style>
+          body { font-family: Arial, sans-serif; background: #f8fafc; color: #0f172a; }
+          .container { max-width: 640px; margin: 24px auto; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; overflow: hidden; }
+          .header { background: #0f172a; color: #ffffff; padding: 16px 24px; font-weight: bold; }
+          .content { padding: 24px; }
+          .footer { padding: 16px 24px; color: #64748b; font-size: 12px; }
+          a { color: #1d4ed8; }
+        </style>
+      </head>
+      <body>
+        <div class="container">
+          <div class="header">Partnergize</div>
+          <div class="content">
+            ${contentHtml}
+          </div>
+          <div class="footer">This email was sent by Partnergize. If you have questions, reply to this email.</div>
+        </div>
+      </body>
+    </html>
+  `
+}
+
+export function buildNextStepsEmail(name: string, links: string[]): string {
+  const list = links.length ? `<ul>${links.map(l => `<li><a href="${l}">${l}</a></li>`).join('')}</ul>` : '<p>No attachments found.</p>'
+  return wrapEmail('Your Next Steps', `
+    <h2 style="margin:0 0 12px 0;">Hello ${name},</h2>
+    <p>Congratulations! Your verification has been received and approved. Please review the documents below for your next steps:</p>
+    ${list}
+    <p>If you need assistance, simply reply to this email.</p>
+  `)
+}
+
+export function buildAdminVerificationNotice(name: string): string {
+  return wrapEmail('New User Verification', `
+    <p>User <strong>${name}</strong> has completed verification and marked approval.</p>
+    <p>Next Steps documents have been sent automatically.</p>
+  `)
 }
